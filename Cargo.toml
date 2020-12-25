@@ -14,6 +14,7 @@ path = "src/client.rs"
 tonic = "0.3.1"
 prost = "0.6.1"
 tokio = { version = "0.2", features = ["macros"] }
+array2d = "0.2.1"
 
 [build-dependencies]
 tonic-build = "0.3"

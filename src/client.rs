@@ -1,17 +1,36 @@
 use std::fmt;
 use std::fmt::Formatter;
 
+use array2d::Array2D;
+
 use minesweeper::minesweeper_client::MinesweeperClient;
 use minesweeper::*;
 
 pub mod minesweeper {
     tonic::include_proto!("proto");
 }
+#[derive(Clone)]
+struct BoardPiece {
+    x: i8,
+    y: i8,
+    value: i8,
+}
+impl BoardPiece {
+    fn new() -> BoardPiece {
+        BoardPiece {
+            x: 0,
+            y: 0,
+            value: 0,
+        }
+    }
+}
+
 struct Game {
     level_id: String,
     rows: i32,
     columns: i32,
     mines: i32,
+    board: Array2D<BoardPiece>,
 }
 impl Game {
     async fn init(
@@ -22,14 +41,20 @@ impl Game {
 
         let game_data = response.into_inner();
 
-        self.rows = game_data.rows;
+        println!("{:?}", self.board);
+
         self.columns = game_data.columns;
         self.mines = game_data.mines;
+        self.board = self.build_board();
 
-        let test = self.click(client, 0, 0).await?;
-        println!("{:?}", test);
+        println!("{:?}", self.board);
 
         Ok(())
+    }
+
+    fn build_board(&mut self) -> Array2D<BoardPiece> {
+        let board = Array2D::filled_with(BoardPiece::new(), 2, 2);
+        board
     }
 
     async fn start_game(
@@ -92,6 +117,7 @@ async fn new_id(
         rows: 0,
         columns: 0,
         mines: 0,
+        board: Array2D::filled_with(BoardPiece::new(), 0, 0),
     };
 
     Ok(game)
@@ -104,5 +130,11 @@ impl std::fmt::Display for Game {
             "Rows: {}\nColumns: {}\nMines: {}",
             self.rows, self.columns, self.mines
         )
+    }
+}
+
+impl std::fmt::Debug for BoardPiece {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        writeln!(f, "X: {} Y: {} Value: {}", self.x, self.y, self.value)
     }
 }
