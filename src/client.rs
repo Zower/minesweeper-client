@@ -47,7 +47,7 @@ impl Game {
         Ok(response)
     }
 
-    pub async fn open_tile(
+    async fn open_tile(
         &mut self,
         client: &mut MinesweeperClient<tonic::transport::Channel>,
         row: usize,
@@ -71,7 +71,7 @@ impl Game {
         Ok(())
     }
 
-    pub async fn mark_mine(
+    async fn mark_mine(
         &mut self,
         client: &mut MinesweeperClient<tonic::transport::Channel>,
         row: usize,
