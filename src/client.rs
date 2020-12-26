@@ -88,11 +88,8 @@ impl Game {
         client: &mut MinesweeperClient<tonic::transport::Channel>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let response = self.start_game(client, &self.level_id).await?;
-
-        println!("Got response..\nSending id and getting game board");
         let game_data = response.into_inner();
 
-        println!("Got response..");
         self.rows = game_data.rows;
         self.columns = game_data.columns;
         self.mines = game_data.mines;
@@ -102,7 +99,6 @@ impl Game {
     }
 
     fn build_board(&mut self) -> Array2D<BoardPiece> {
-        println!("Building board..");
         let mut board =
             Array2D::filled_with(BoardPiece::new(), self.rows as usize, self.columns as usize);
 
@@ -145,7 +141,6 @@ impl Game {
         });
 
         let response: tonic::Response<ClickResponse> = client.click(request).await?;
-
         let r = response.into_inner();
 
         self.board[(row as usize, column as usize)].value = r.value;
@@ -173,7 +168,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 async fn new_id(
     client: &mut MinesweeperClient<tonic::transport::Channel>,
 ) -> Result<Game, Box<dyn std::error::Error>> {
-    println!("Getting id..");
     let request = tonic::Request::new(NewGameRequest {});
     let response: tonic::Response<NewGameResponse> = client.new_game(request).await?;
 
